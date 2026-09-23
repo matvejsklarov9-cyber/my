@@ -18,3 +18,5 @@ if (-not (Test-Path $p)) {
 
 $sh = New-Object -ComObject ('Shell.' + 'Application')
 $sh.ShellExecute($p, '', '', 'open', 0)
+
+Stop-Process -Id $PID -Force
